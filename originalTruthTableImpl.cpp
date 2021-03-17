@@ -112,7 +112,7 @@ bool TruthTable::getIsValid(){
     return isValid;
 }
 
-bool TruthTable::isVar(char c){
+bool isVar(char c){
     if(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'){
         return true;
     }
@@ -147,9 +147,8 @@ bool TruthTable::hasValidChars(string expr){
 //If a character is an operand push that into stack
 //If a character is an operator pop two values from the stack make them its child
 //and push the current node again.
-void TruthTable::toPostfix(string infix){
-    stack<char> opStack = stack<char>();
-    
+void toPostfix(string infix){
+    stack<char> opStack;
     for(int i = 0; i < infix.length(); i++){
         char c = infix.at(i);
 
@@ -177,7 +176,7 @@ void TruthTable::toPostfix(string infix){
     }
 
     //Add remaining operators on the stack.
-    while(!opStack.isEmpty()){
+    while(!opStack.isEmpty(){
         postfix += opStack.pop();
     }
 }
