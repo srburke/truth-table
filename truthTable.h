@@ -4,7 +4,7 @@
 #include <string>
 #include <stack>
 using namespace std;
-class Operator: private TruthTable{
+class Operator{
     public:
         char inputChar;
         char outputChar;
@@ -16,7 +16,7 @@ class Operator: private TruthTable{
             precedence = prec;
             connective = con;
         }
-    private:
+        
         Operator getOp(char given);
         
 };
@@ -38,17 +38,51 @@ class ExpressionTree{
         //ExpressionTree():data('\0'), leftChild(nullptr), rightChild(nullptr){};
 
     public:
-        ExpressionTree(char data);
+       public:
+        ExpressionTree(char data){
+            setData(data);
+        }
+
         void insert(ExpressionTree *newTree);
-        bool virtual isEmpty();
-        ExpressionTree getLeftChild();
-        ExpressionTree getRightChild();
-        char getData();
-        void setData(char theData);
-        ~ExpressionTree();
+
+        ExpressionTree getLeftChild(){
+            return *leftChild;
+        }
+
+        ExpressionTree getRightChild(){
+            return *rightChild;
+        }
+        
+        char getData(){
+            return data;
+        }
+
+        void setData(char theData){
+            data = theData;
+        }
 };
 
-class TruthTable{
+/**Inorder traversal of expression tree produces infix version of given postfix expression
+* (same with postorder traversal it gives postfix expression)
+**/
+class TruthTable : public Operator, ExpressionTree{
+    private:
+        vector<char> vars = vector<char>();
+        vector<string> inputVals = vector<string>();
+        vector<char> outputVals = vector<char>();
+        string infix = "";
+        string postfix = "";
+        bool isValid = false;   
+        void determineVars();
+        string trim(string ignoreSpace);
+        bool hasValidChars(string expr);
+        void toPostfix(string infix);
+        void createInfix(ExpressionTree beginNode);
+        void toInfix(ExpressionTree mainExprTree);
+        void checkForErrors();
+        void generateInputVals();
+        bool evaluate(bool isTrueFirst);
+
     public:
         TruthTable(string input, bool isTrueFirst);
 
@@ -62,14 +96,5 @@ class TruthTable{
         void print();
         ~TruthTable();
 
-    private:
-        void determineVars();
-        string trim(string ignoreSpace);
-        bool hasValidChars(string expr);
-        void toPostfix(string infix);
-        void createInfix(ExpressionTree beginNode);
-        void toInfix(ExpressionTree mainExprTree);
-        void checkForErrors();
-        void generateInputVals();
-        bool evaluate(bool isTrueFirst);
+    
 };

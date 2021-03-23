@@ -11,32 +11,21 @@ Operator rightParen = Operator(')', ')', 0, 0);
 char TRUE = 'T';
 char FALSE = 'F';
 
-vector<char> vars = vector<char>();
-vector<string> inputVals = vector<string>();
-vector<char> outputVals = vector<char>();
-
-/**Inorder traversal of expression tree produces infix version of given postfix expression
- * (same with postorder traversal it gives postfix expression)
-**/
-string infix = "";
-string postfix = "";
-bool isValid = false;
-
 //From char returns the defined operator.
-Operator Operator::getOp(char given){
-    if(given == NOT.inputChar){
+Operator Operator::getOp(char c){
+    if(c == NOT.inputChar){
         return NOT;
     }
-    if(given == AND.inputChar){
+    if(c == AND.inputChar){
         return AND;
     }
-    if(given == OR.inputChar){
+    if(c == OR.inputChar){
         return OR;
     }
-    if(given == IMPLY.inputChar){
+    if(c == IMPLY.inputChar){
         return IMPLY;
     }
-    if(given == IFF.inputChar){
+    if(c == IFF.inputChar){
         return IFF;
     }
 }
@@ -63,29 +52,6 @@ void ExpressionTree::insert(ExpressionTree *newTree){
     else{
         leftChild->insert(newTree);
     }
-}
-
-bool ExpressionTree::isEmpty(){
-    if(data == '\0' && leftChild == NULL && rightChild == NULL){
-        return true;
-    }
-    return false;
-}
-
-ExpressionTree ExpressionTree::getLeftChild(){
-    return *leftChild;
-}
-
-ExpressionTree ExpressionTree::getRightChild(){
-    return *rightChild;
-}
-
-char ExpressionTree::getData(){
-    return data;
-}
-
-void ExpressionTree::setData(char theData){
-    data = theData;
 }
 
 vector<char> TruthTable::getVars(){
@@ -123,7 +89,7 @@ string TruthTable::trim(string ignoreSpace){
     string trim = "";
 
     for(int i = 0; i < ignoreSpace.length(); i++){
-        char c = ignoreSpace.at(i);
+        char c = ignoreSpace[i];
         if(c != ' '){
             trim += c;
         }
@@ -134,7 +100,7 @@ string TruthTable::trim(string ignoreSpace){
 bool TruthTable::hasValidChars(string expr){
     //Check if expression has all valid characters
     for(int i = 0; i < expr.length(); i++){
-        char inputChar = expr.at(i);
+        char inputChar = expr[i];
         if(!isOp(inputChar)){
             if(!isVar(inputChar)){
                 return false;
@@ -148,10 +114,10 @@ bool TruthTable::hasValidChars(string expr){
 //If a character is an operator pop two values from the stack make them its child
 //and push the current node again.
 void TruthTable::toPostfix(string infix){
-    stack<char> opStack = stack<char>();
+    stack<char> opStack;
     
     for(int i = 0; i < infix.length(); i++){
-        char c = infix.at(i);
+        char c = infix[i];
 
         if(isVar(c)){
             postfix += c;
@@ -160,24 +126,34 @@ void TruthTable::toPostfix(string infix){
             opStack.push(c);
         }
         else if(c == rightParen.inputChar){
-            while(opStack.top() != leftParen.inputChar){
-                char x = opStack.top();
+            while(!opStack.empty() && opStack.top() != leftParen.inputChar){
+                postfix += opStack.top();
                 opStack.pop();
-                postfix += x;
             }
+            opStack.pop();
         }
         else if(isOp(c)){
-            while(getOp(opStack.top()).precedence > getOp(c).precedence){
-                char t = opStack.top();
+            while(!opStack.empty() && getOp(opStack.top()).precedence >= getOp(c).precedence){
+                postfix += opStack.top();
                 opStack.pop();
-                postfix += t;
             }
             opStack.push(getOp(c).outputChar);
         }
     }
 
     //Add remaining operators on the stack.
-    while(!opStack.isEmpty()){
-        postfix += opStack.pop();
+    while(!opStack.empty()){
+        postfix += opStack.top();
+        opStack.pop();
     }
+}
+
+void TruthTable::createInfix(ExpressionTree beginNode){
+
+    for(int i = 0; beginNode[i] != getData(); i++){
+        if(isOp(beginNode[i])){
+
+        }
+    }
+
 }
