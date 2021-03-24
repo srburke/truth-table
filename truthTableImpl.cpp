@@ -38,10 +38,6 @@ bool isOp(char c){
         return false;
 }
 
-ExpressionTree::ExpressionTree(char data){
-        setData(data);
-}
-
 void ExpressionTree::insert(ExpressionTree *newTree){
     if(leftChild == NULL){
         leftChild = newTree;
@@ -52,6 +48,13 @@ void ExpressionTree::insert(ExpressionTree *newTree){
     else{
         leftChild->insert(newTree);
     }
+}
+
+ExpressionTree::ExpressionTree* newNode(char v){
+    ExpressionTree *temp = new ExpressionTree;
+    temp->leftChild = temp->rightChild = NULL;
+    temp->data = v;
+    return temp;
 }
 
 vector<char> TruthTable::getVars(){
@@ -113,11 +116,11 @@ bool TruthTable::hasValidChars(string expr){
 //If a character is an operand push that into stack
 //If a character is an operator pop two values from the stack make them its child
 //and push the current node again.
-void TruthTable::toPostfix(string infix){
+void TruthTable::toPostfix(string inFix){
     stack<char> opStack;
     
-    for(int i = 0; i < infix.length(); i++){
-        char c = infix[i];
+    for(int i = 0; i < inFix.length(); i++){
+        char c = inFix[i];
 
         if(isVar(c)){
             postfix += c;
@@ -148,12 +151,70 @@ void TruthTable::toPostfix(string infix){
     }
 }
 
-void TruthTable::createInfix(ExpressionTree beginNode){
+void TruthTable::createInfix(ExpressionTree *beginNode){
+    if(beginNode != NULL){
+        if(isOp(beginNode->getData())){
+            infix += '(';
+        }
 
-    for(int i = 0; beginNode[i] != getData(); i++){
-        if(isOp(beginNode[i])){
+        createInfix(beginNode->getLeftChild());
+        infix += beginNode->getData();
+        createInfix(beginNode->getRightChild());
 
+        if(isOp(beginNode->getData())){
+            infix += ')';
         }
     }
+}
+//Creates an infix expression from an expression tree
+void TruthTable::toInfix(ExpressionTree *mainExprTree){
+    createInfix(mainExprTree);
 
+    //Place negation in front of expression
+    for(int i = 0; i < infix.length(); i++){
+        if(infix[i] == NOT.outputChar){
+            //Find the NOTs left parenthesis
+            for(int j = i; j >= 0; j--){
+                if(infix[j] == leftParen.outputChar){
+                    string firstPart = infix.substr(0, j);
+                    string negatedExpr = infix.substr(j, i);
+                    string lastPart = infix.substr(i + 1, infix.length());
+
+                    infix = firstPart + NOT.outputChar + negatedExpr + lastPart;
+                    break;
+                }
+            }
+        }
+    }
+    //Remove outer left parenthesis 
+    if(infix[0] == '('){
+        infix = infix.substr(1);
+    }
+
+    //Remove outer right parenthesis
+    if(infix[infix.length() - 1] == ')'){
+        infix = infix.substr(0, infix.length() - 1);
+    }
+}
+
+//Should input the postfix expression to an expression tree
+//If an error occurs then it's an invalid expression tree
+bool TruthTable::inputPostExprToTree(){
+    stack<ExpressionTree> exprStack;
+    ExpressionTree *nodeNew;
+    try{
+        for(int i = 0; i < postfix.length(); i++){
+            char c = postfix[i];
+
+            if(isVar(c)){
+                nodeNew = newNode(c);
+                exprStack.push(*nodeNew);
+            } else if(c == NOT.outputChar){
+                nodeNew = newNode(c);
+                leftChild = exprStack.pop();
+            } else if(isOp(c)){
+
+            }
+        }
+    }
 }
