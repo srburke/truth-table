@@ -50,13 +50,6 @@ void ExpressionTree::insert(ExpressionTree *newTree){
     }
 }
 
-ExpressionTree::ExpressionTree* newNode(char v){
-    ExpressionTree *temp = new ExpressionTree;
-    temp->leftChild = temp->rightChild = NULL;
-    temp->data = v;
-    return temp;
-}
-
 vector<char> TruthTable::getVars(){
     return vars;
 }
@@ -113,12 +106,6 @@ bool TruthTable::hasValidChars(string expr){
     return true;
 }
 
-void TruthTable::determineVars(){
-    for(int i = 0; i < postfix.length(); i++){
-        char c = postfix[i];
-        if(isVar(c) && !vars.(c))
-    }
-}
 
 //If a character is an operand push that into stack
 //If a character is an operator pop two values from the stack make them its child
@@ -256,6 +243,4 @@ bool TruthTable::inputPostExprToTree(){
         return true;
 }
 
-void TruthTable::generateInputVals(bool isTrueFirst){
 
-}

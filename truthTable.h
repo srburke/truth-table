@@ -29,7 +29,7 @@ class ExpressionTree{
     public:
         char data;
         ExpressionTree *leftChild, *rightChild;
-        ExpressionTree* newNode(char v);
+    
         ExpressionTree():data('\0'), leftChild(nullptr), rightChild(nullptr){};
 
        // ExpressionTree(char c){
@@ -37,6 +37,13 @@ class ExpressionTree{
            // leftChild = NULL;
             //rightChild = NULL;
         //}
+
+        ExpressionTree* newNode(char v){
+            ExpressionTree *temp = new ExpressionTree;
+        temp->leftChild = temp->rightChild = NULL;
+        temp->data = v;
+        return temp;
+        }
 
         ExpressionTree(char data){
             setData(data);
