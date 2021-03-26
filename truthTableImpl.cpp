@@ -113,6 +113,13 @@ bool TruthTable::hasValidChars(string expr){
     return true;
 }
 
+void TruthTable::determineVars(){
+    for(int i = 0; i < postfix.length(); i++){
+        char c = postfix[i];
+        if(isVar(c) && !vars.(c))
+    }
+}
+
 //If a character is an operand push that into stack
 //If a character is an operator pop two values from the stack make them its child
 //and push the current node again.
@@ -197,24 +204,58 @@ void TruthTable::toInfix(ExpressionTree *mainExprTree){
     }
 }
 
+/**
+ * Algorithm to construct a tree from the expression:
+ *  Have a stack to store immediate values(which are trees),
+ *  and examine each token from left to right
+ *      - If it is an operand, turn it into a leaf node and
+ *          push it on the stack
+ *      - If it is an operator, pop two items from the stack,
+ *          construct an operator node with those children,
+ *             and push the new node on the stack
+ * 
+ */
 //Should input the postfix expression to an expression tree
 //If an error occurs then it's an invalid expression tree
 bool TruthTable::inputPostExprToTree(){
-    stack<ExpressionTree> exprStack;
-    ExpressionTree *nodeNew;
-    try{
+    stack<ExpressionTree *> exprStack;
+    ExpressionTree *nodeNew, *t1, *t2;
         for(int i = 0; i < postfix.length(); i++){
             char c = postfix[i];
 
             if(isVar(c)){
                 nodeNew = newNode(c);
-                exprStack.push(*nodeNew);
+                exprStack.push(nodeNew);
             } else if(c == NOT.outputChar){
                 nodeNew = newNode(c);
-                leftChild = exprStack.pop();
+                t2 = exprStack.top();
+                exprStack.pop();
+
+                nodeNew->leftChild = t2;
+                exprStack.push(nodeNew);
             } else if(isOp(c)){
+                nodeNew = newNode(c);
+                t1 = exprStack.top();
+                exprStack.pop();
+                t2 = exprStack.top();
+                exprStack.pop();
+
+                nodeNew->rightChild = t1;
+                nodeNew->leftChild = t2;
+                exprStack.push(nodeNew);
 
             }
         }
-    }
+        if(exprStack.empty()){
+            return false;
+        }
+
+        t1 = exprStack.top();
+        exprStack.pop();
+        toInfix(t1);
+        return true;
+}
+
+void TruthTable::generateInputVals(bool isTrueFirst){
+
 }

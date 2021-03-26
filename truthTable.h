@@ -79,7 +79,7 @@ class TruthTable : public Operator, ExpressionTree{
         void createInfix(ExpressionTree *beginNode);
         void toInfix(ExpressionTree *mainExprTree);
         bool inputPostExprToTree();
-        void generateInputVals();
+        void generateInputVals(bool isTrueFirst);
         bool evaluate(bool isTrueFirst);
 
     public:
