@@ -6,6 +6,8 @@
 using namespace std;
 class Operator{
     public:
+        char c;
+        bool eval(bool p, bool q);
         char inputChar;
         char outputChar;
         int precedence = 0, connective = 0;
@@ -16,8 +18,9 @@ class Operator{
             precedence = prec;
             connective = con;
         }
-        
-        Operator getOp(char given);
+
+        bool isOperand(char c);
+      
         
 };
 
@@ -81,8 +84,7 @@ class TruthTable : public Operator, ExpressionTree{
         bool isValid = false;   
         void determineVars();
         string trim(string ignoreSpace);
-        bool hasValidChars(string expr);
-        void toPostfix(string infix);
+        string toPostfix(string infix);
         void createInfix(ExpressionTree *beginNode);
         void toInfix(ExpressionTree *mainExprTree);
         bool inputPostExprToTree();
@@ -98,7 +100,6 @@ class TruthTable : public Operator, ExpressionTree{
         string getInfix();
         string getPostfix();
         bool getIsValid();
-        bool isVar(char c);
         void print();
         ~TruthTable();
 
