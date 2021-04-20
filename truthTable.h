@@ -1,107 +1,148 @@
+/**
+ * @file truthTable.h
+ * @author Shannon Burke
+ * @brief 
+ * @version 0.1
+ * @date 2021-04-19
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
 #include <iostream>
 #include <vector>
 #include <map>
 #include <string>
 #include <stack>
+#include <math.h>
+#include <iomanip>
+#include <algorithm>
 using namespace std;
-class Operator{
-    public:
-        char c;
-        bool eval(bool p, bool q);
-        char inputChar;
-        char outputChar;
-        int precedence = 0, connective = 0;
+class Expression{
 
-        Operator(char inChar, char outChar, int prec, int con){
-            inputChar = inChar;
-            outputChar = outChar;
-            precedence = prec;
-            connective = con;
-        }
+    static int getPrec(char c) {
+		if (c == '~'){
+            return 4;
+        }		
+		else if (c == '^'){
+            return 3;
+        } 
+        else if (c == '+') {
+            return 2;
+        } 
+        else if (c == '>'){
+            return 1;
+        } 
+        else {
+            return 0;
+        }		
+	}
 
-        bool isOperand(char c);
+	static bool isOp(char c) {
+		return c == '^' || c == '+' || c == '>' || c == '-' || c == '~';
+	}
+
+	static bool isOperand(char c) {
+		return c >= 'A' && c <= 'Z';
+	}
       
-        
-};
+public:
 
-//If a charcter is an operand push that into stack
-//If a character is an operator pop two values from the stack make them its child
-//and push the current node again.
-class ExpressionTree{
-       
-    public:
-        char data;
-        ExpressionTree *leftChild, *rightChild;
-    
-        ExpressionTree():data('\0'), leftChild(nullptr), rightChild(nullptr){};
+    /**
+     * 1) If a character is an operand push that into stack
+     * 2) If a character is an operator pop two values from the stack make them its child
+     *      and push the current node again
+     * 3) Pop again to remove extra '(' from the stack as it is already paired with ')' 
+     * 
+     * @param infix 
+     * @return string 
+     */
+    static string toPostFix(string infix){
+        stack<char> opStack;
 
-       // ExpressionTree(char c){
-         //   data = '\0';
-           // leftChild = NULL;
-            //rightChild = NULL;
-        //}
+		string postfix; //stores final postfix expression
+		char c; //stores each token of infix expression
 
-        ExpressionTree* newNode(char v){
-            ExpressionTree *temp = new ExpressionTree;
-        temp->leftChild = temp->rightChild = NULL;
-        temp->data = v;
-        return temp;
-        }
+		infix.insert(0, 1, '(');
+		infix.push_back(')');
 
-        ExpressionTree(char data){
-            setData(data);
-        }
+		postfix = "";
+		for (int i = 0; i < infix.length(); i++) {
+			c = infix[i];
+			if (c == '(') {
+				opStack.push(c);
+			}
+			else if (isOperand(c)) {
+				postfix.push_back(c);
+			}
+			else if (isOp(c)) {
+				while (isOp(opStack.top()) && (getPrec(opStack.top()) >= getPrec(c))) {
+					char curr = opStack.top();
+					opStack.pop();
+					postfix.push_back(curr);
+				}
+				opStack.push(c);
+			}
+			else if (c == ')') {
+				while (opStack.top() != '(') {
+					char curr = opStack.top();
+					opStack.pop();
+					postfix.push_back(curr);
+				} 
+				opStack.pop();
+			}
+		}
+		return postfix;
+    }
 
-        void insert(ExpressionTree *newTree);
 
-        ExpressionTree *getLeftChild(){
-            return leftChild;
-        }
+/**
+ * Algorithm to evaluate postfix expressions:
+ *  1) Create a stack to store operands (or values).
+ *  2) Scan the given expression and do following for every scanned element.
+ *      a) If the element is a number, push it into the stack
+ *      b) If the element is a operator, pop operands for the operator from stack. 
+ *          Evaluate the operator and push the result back to the stack
+ *  3) When the expression is ended, the number in the stack is the final answer
+ * 
+ */
+    static int evalExpr(string& postfix, vector<int>& val){
+        stack<int> exprStack;
+		char c;
 
-        ExpressionTree *getRightChild(){
-            return rightChild;
-        }
-        
-        char getData(){
-            return data;
-        }
-
-        void setData(char theData){
-            data = theData;
-        }
-};
-
-/**Inorder traversal of expression tree produces infix version of given postfix expression
-* (same with postorder traversal it gives postfix expression)
-**/
-class TruthTable : public Operator, ExpressionTree{
-    private:
-        vector<char> vars = vector<char>();
-        vector<string> inputVals = vector<string>();
-        vector<char> outputVals = vector<char>();
-        string infix = "";
-        string postfix = "";
-        bool isValid = false;   
-        void determineVars();
-        string trim(string ignoreSpace);
-        string toPostfix(string infix);
-        void createInfix(ExpressionTree *beginNode);
-        void toInfix(ExpressionTree *mainExprTree);
-        bool inputPostExprToTree();
-        void generateInputVals(bool isTrueFirst);
-        bool evaluate(bool isTrueFirst);
-
-    public:
-        TruthTable(string input, bool isTrueFirst);
-
-        vector<char> getVars();
-        vector<string> getInputVals();
-        vector<char> getOutputVals();
-        string getInfix();
-        string getPostfix();
-        bool getIsValid();
-        void print();
-        ~TruthTable();
-
-    
+		for (int i = 0; i < postfix.length(); i++) {
+			c = postfix[i];
+			if (isOperand(c)) {
+				exprStack.push(val[c - 'A']);
+			}
+			else if (isOp(c)) {
+				int e1, e2;
+				if (c == '~') {
+					e1 = exprStack.top();
+					exprStack.pop();
+					exprStack.push(!e1);
+				}
+				else {
+					e1 = exprStack.top();
+					exprStack.pop();
+					e2 = exprStack.top();
+					exprStack.pop();
+					switch (c) {
+					case '+':
+						exprStack.push(e2 | e1);
+						break;
+					case '^':
+						exprStack.push(e2 & e1);
+						break;
+                    case '>':
+                        exprStack.push((e2 & !e1) ? 0 : 1);
+                        break;
+                    case '-':
+                        exprStack.push((e2 & e1) || (!e2 & !e1));
+                        break;
+					}
+				}
+			}
+		}
+		return exprStack.top();
+	}
 };
