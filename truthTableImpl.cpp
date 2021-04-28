@@ -64,10 +64,12 @@ void printTable(string s)
 		}
 	}
 
+	// Returns the postfix of s
 	postfix = Expression::toPostFix(s);
 
 	char c;
 
+	// Prints out individual variable
 	for (int i = 0; i < var.size(); i++)
 	{
 		if (var[i] >= 'A' && var[i] <= 'Z' == 1)
@@ -79,8 +81,10 @@ void printTable(string s)
 			cout << "|" << var[i] << setw(1);
 		}
 	}
+	// Prints out full expression
 	cout << "|" << s << setw(1) << endl;
 
+	// Constructs col title alignment for table
 	for (int i = 0; i < var.size() + 1; i++)
 	{
 		cout << "+";
@@ -96,23 +100,25 @@ void printTable(string s)
 
 		for (int i = 0; i < var.size(); i++)
 		{
+			// If equal to 0 then print F
 			if (val[var[i] - 'A'] == 0)
 			{
 				cout << "|"
 					 << "F" << setw(1);
 			}
+			// If equal to 1 then print T
 			else if (val[var[i] - 'A'] == 1)
 			{
 				cout << "|"
 					 << "T" << setw(1);
 			}
-
+			// If equal to 0 then print F
 			else if (val[var[i] - 'a'] == 0)
 			{
 				cout << "|"
 					 << "F" << setw(1);
 			}
-
+			// If equal to 1 then print T
 			else if (val[var[i] - 'a'] == 1)
 			{
 				cout << "|"
@@ -120,11 +126,13 @@ void printTable(string s)
 			}
 		}
 
+		// If equal to 0 then print F
 		if (Expression::evalExpr(postfix, val) == 0)
 		{
 			cout << "|"
 				 << "F" << endl;
 		}
+		// If equal to 1 then print T
 		if (Expression::evalExpr(postfix, val) == 1)
 		{
 			cout << "|"
@@ -132,6 +140,7 @@ void printTable(string s)
 		}
 		toBinary(var, val);
 
+		// Constructs row and col alignment for incr
 		for (int k = 0; k < var.size() + 1; k++)
 		{
 			cout << "+";

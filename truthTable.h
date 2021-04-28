@@ -44,17 +44,17 @@ class Expression
 		}
 	}
 
-	static bool isOp(char c)
+	static bool isOp(char c) //operators
 	{
 		return c == '^' || c == '+' || c == '>' || c == '-' || c == '~';
 	}
 
-	static bool isOperand(char c)
+	static bool isOperand(char c) //uppercase
 	{
 		return c >= 'A' && c <= 'Z';
 	}
 
-	static bool isOperandTwo(char c)
+	static bool isOperandTwo(char c) //lowercase
 	{
 		return c >= 'a' && c <= 'z';
 	}
@@ -148,7 +148,7 @@ public:
 			else if (isOp(c))
 			{
 				int e1, e2;
-				if (c == '~')
+				if (c == '~') //NOT evaluation
 				{
 					e1 = exprStack.top();
 					exprStack.pop();
@@ -163,16 +163,16 @@ public:
 					switch (c)
 					{
 					case '+':
-						exprStack.push(e2 | e1);
+						exprStack.push(e2 | e1); //OR evaluation
 						break;
 					case '^':
-						exprStack.push(e2 & e1);
+						exprStack.push(e2 & e1); //AND evaluation
 						break;
 					case '>':
-						exprStack.push((e2 & !e1) ? 0 : 1);
+						exprStack.push((e2 & !e1) ? 0 : 1); //CONDITIONAL evaluation
 						break;
 					case '-':
-						exprStack.push((e2 & e1) || (!e2 & !e1));
+						exprStack.push((e2 & e1) || (!e2 & !e1)); //BICONDITIONAl evaluation
 						break;
 					}
 				}
